@@ -2,6 +2,7 @@ require('dotenv').config();
 const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
+const dns = require("dns");
 const app = express();
 const mongoose = require("mongoose");
 const { Schema } =  mongoose;
@@ -31,23 +32,33 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-app.post("/api/shorturl", function(req, res) {
-  const newShorten = new ShortenURL({
-    original_url: req.body.url,
-    short_url: Math.floor(new Date)
-  });
-
-  newShorten.save(function(err, data) {
+app.post("/api/shorturl", function(req, res, next) {
+  dns.lookup(req.body.url, function(err, host) {
     if (err) {
       return res.json({
-        error: err
+        error: "Invalid URL"
       });
     }
-
-    const url = JSON.stringify(data, ["original_url", "short_url"]);
-
-    res.json(JSON.parse(url));
+    req.host = host;
+    next();
   });
+}, function(req, res) {
+    const newShorten = new ShortenURL({
+      original_url: req.host,
+      short_url: Math.floor(new Date)
+    });
+
+    newShorten.save(function(err, data) {
+      if (err) {
+        return res.json({
+          error: err
+        });
+      }
+
+      const url = JSON.stringify(data, ["original_url", "short_url"]);
+
+      res.json(JSON.parse(url));
+    });
 });
 
 
