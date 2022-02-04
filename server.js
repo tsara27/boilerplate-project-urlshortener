@@ -1,7 +1,24 @@
 require('dotenv').config();
+const bodyParser = require('body-parser');
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const mongoose = require("mongoose");
+const { Schema } =  mongoose;
+
+// Connect to mongo server
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
+
+// Config body parser
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Initiate URL Shortener Schema
+const shortenSchema = new Schema({
+  original_url: { type: String, required: true, unique: true },
+  short_url: Number
+});
+
+let ShortenURL = mongoose.model('ShortenURL', shortenSchema);
 
 // Basic Configuration
 const port = process.env.PORT || 3000;
@@ -14,10 +31,25 @@ app.get('/', function(req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
 });
 
-// Your first API endpoint
-app.get('/api/hello', function(req, res) {
-  res.json({ greeting: 'hello API' });
+app.post("/api/shorturl", function(req, res) {
+  const newShorten = new ShortenURL({
+    original_url: req.body.url,
+    short_url: Math.floor(new Date)
+  });
+
+  newShorten.save(function(err, data) {
+    if (err) {
+      return res.json({
+        error: err
+      });
+    }
+
+    const url = JSON.stringify(data, ["original_url", "short_url"]);
+
+    res.json(JSON.parse(url));
+  });
 });
+
 
 app.listen(port, function() {
   console.log(`Listening on port ${port}`);
