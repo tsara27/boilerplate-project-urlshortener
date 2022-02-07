@@ -34,10 +34,19 @@ app.get('/', function(req, res) {
 });
 
 app.post("/api/shorturl", function(req, res, next) {
-  let fullURL = new URL(req.body.url);
-  console.log(fullURL);
-  let domain = fullURL.hostname;
-  dns.lookup(domain.replace(excludeRegex, ""), function(err, host) {
+  try {
+   req.fullURL = new URL(req.body.url);
+   req.urlDomain = req.fullURL.hostname;
+  }
+
+  catch(err) {
+    return res.json({
+      error: "Invalid URL"
+    });
+  }
+  next();
+}, function(req, res, next) {
+  dns.lookup(req.urlDomain, function(err, host) {
     if (err) {
       return res.json({
         error: "Invalid URL"
@@ -84,7 +93,7 @@ app.get("/api/shorturl/:short_url", function(req, res) {
       });
     }
 
-    res.redirect(`https://` + data.original_url.replace(excludeRegex, ""));
+    res.redirect(data.original_url);
   });
 });
 
