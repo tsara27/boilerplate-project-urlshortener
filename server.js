@@ -34,6 +34,7 @@ app.get('/', function(req, res) {
 });
 
 app.post("/api/shorturl", function(req, res, next) {
+  console.log("THE URL :" + req.body.url);
   try {
    req.fullURL = new URL(req.body.url);
    req.urlDomain = req.fullURL.hostname;
