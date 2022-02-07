@@ -70,7 +70,7 @@ app.get("/api/shorturl/:short_url", function(req, res) {
     }
 
     res.writeHead(301, {
-      Location: data.original_url
+      Location: `https://` + data.original_url
     }).end();
   });
 });
