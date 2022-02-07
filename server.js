@@ -42,23 +42,34 @@ app.post("/api/shorturl", function(req, res, next) {
     req.original_url = req.body.url;
     next();
   });
+}, function(req, res, next) {
+  ShortenURL.findOne({ original_url: req.original_url }, function(err, data) {
+    req.existingURL = data;
+    next();
+  });
 }, function(req, res) {
-    const newShorten = new ShortenURL({
-      original_url: req.original_url,
-      short_url: Math.floor(new Date)
-    });
+  if (req.existingURL != null) {
+    const url = JSON.stringify(req.existingURL, ["original_url", "short_url"]);
 
-    newShorten.save(function(err, data) {
-      if (err) {
-        return res.json({
-          error: err
-        });
-      }
+    return res.json(JSON.parse(url));
+  }
 
-      const url = JSON.stringify(data, ["original_url", "short_url"]);
+  const newShorten = new ShortenURL({
+    original_url: req.original_url,
+    short_url: Math.floor(new Date)
+  });
 
-      res.json(JSON.parse(url));
-    });
+  newShorten.save(function(err, data) {
+    if (err) {
+      return res.json({
+        error: err
+      });
+    }
+
+    const url = JSON.stringify(data, ["original_url", "short_url"]);
+
+    res.json(JSON.parse(url));
+  });
 });
 
 app.get("/api/shorturl/:short_url", function(req, res) {
