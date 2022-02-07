@@ -38,7 +38,7 @@ app.post("/api/shorturl", function(req, res, next) {
     req.fullURL = new URL(req.body.url);
     req.urlDomain = req.fullURL.hostname;
 
-    if (fullURL.protocol.match(httpsRegex) == null) {
+    if (req.fullURL.protocol.match(httpsRegex) == null) {
       return res.json({
         error: "Invalid URL"
       });
