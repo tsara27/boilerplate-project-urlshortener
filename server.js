@@ -81,7 +81,7 @@ app.get("/api/shorturl/:short_url", function(req, res) {
       });
     }
 
-    res.redirect(`https://` + data.original_url.replace(excludeRegex, "");
+    res.redirect(`https://` + data.original_url.replace(excludeRegex, ""));
   });
 });
 
