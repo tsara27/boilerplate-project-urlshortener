@@ -73,7 +73,7 @@ app.post("/api/shorturl", function(req, res, next) {
 });
 
 app.get("/api/shorturl/:short_url", function(req, res) {
-  ShortenURL.findOne({ short_url: req.params.short_url }, function(err, data) {
+  ShortenURL.findOne({ short_url: parseInt(req.params.short_url) }, function(err, data) {
     if (err) {
       return res.json({
         error: err
