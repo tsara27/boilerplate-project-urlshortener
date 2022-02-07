@@ -39,12 +39,12 @@ app.post("/api/shorturl", function(req, res, next) {
         error: "Invalid URL"
       });
     }
-    req.host = host;
+    req.original_url = req.body.url;
     next();
   });
 }, function(req, res) {
     const newShorten = new ShortenURL({
-      original_url: req.host,
+      original_url: req.original_url,
       short_url: Math.floor(new Date)
     });
 
@@ -59,6 +59,18 @@ app.post("/api/shorturl", function(req, res, next) {
 
       res.json(JSON.parse(url));
     });
+});
+
+app.get("/api/shorturl/:short_url", function(req, res) {
+  ShortenURL.findOne({ short_url: req.params.short_url }, function(err, data) {
+    if (err) {
+      return res.json({
+        error: err
+      });
+    }
+
+    res.redirect(data.original_url);
+  });
 });
 
 
