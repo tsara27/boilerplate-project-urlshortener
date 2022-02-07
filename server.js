@@ -6,6 +6,7 @@ const dns = require("dns");
 const app = express();
 const mongoose = require("mongoose");
 const { Schema } =  mongoose;
+const excludeRegex = /http:\/\/|https:\/\//g;
 
 // Connect to mongo server
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
@@ -33,8 +34,6 @@ app.get('/', function(req, res) {
 });
 
 app.post("/api/shorturl", function(req, res, next) {
-  const excludeRegex = /http:\/\/|https:\/\//g;
-
   dns.lookup(req.body.url.replace(excludeRegex, ""), function(err, host) {
     if (err) {
       return res.json({
@@ -83,7 +82,7 @@ app.get("/api/shorturl/:short_url", function(req, res) {
     }
 
     res.writeHead(301, {
-      Location: `https://` + data.original_url
+      Location: `https://` + data.original_url.replace(excludeRegex, "");
     }).end();
   });
 });
