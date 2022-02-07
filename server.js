@@ -33,7 +33,9 @@ app.get('/', function(req, res) {
 });
 
 app.post("/api/shorturl", function(req, res, next) {
-  dns.lookup(req.body.url, function(err, host) {
+  const excludeRegex = /http:\/\/|https:\/\//g;
+
+  dns.lookup(req.body.url.replace(excludeRegex, ""), function(err, host) {
     if (err) {
       return res.json({
         error: "Invalid URL"
