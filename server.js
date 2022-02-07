@@ -41,7 +41,7 @@ app.post("/api/shorturl", function(req, res, next) {
 
   catch(err) {
     return res.json({
-      error: "Invalid URL"
+      error: "invalid url"
     });
   }
   next();
@@ -49,7 +49,7 @@ app.post("/api/shorturl", function(req, res, next) {
   dns.lookup(req.urlDomain, function(err, host) {
     if (err) {
       return res.json({
-        error: "Invalid URL"
+        error: "invalid url"
       });
     }
     req.original_url = req.body.url;
