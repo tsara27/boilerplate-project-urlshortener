@@ -82,7 +82,7 @@ app.get("/api/shorturl/:short_url", function(req, res) {
     }
 
     res.writeHead(301, {
-      Location: `https://` + data.original_url.replace(excludeRegex, "");
+      Location: `https://` + data.original_url.replace(excludeRegex, "")
     }).end();
   });
 });
