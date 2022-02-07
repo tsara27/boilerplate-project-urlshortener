@@ -69,7 +69,9 @@ app.get("/api/shorturl/:short_url", function(req, res) {
       });
     }
 
-    res.redirect(data.original_url);
+    res.writeHead(301, {
+      Location: data.original_url
+    }).end();
   });
 });
 
