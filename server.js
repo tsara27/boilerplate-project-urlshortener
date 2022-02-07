@@ -6,7 +6,7 @@ const dns = require("dns");
 const app = express();
 const mongoose = require("mongoose");
 const { Schema } =  mongoose;
-const excludeRegex = /http:\/\/|https:\/\//g;
+const httpsRegex = /http:|https:/g;
 
 // Connect to mongo server
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
@@ -34,10 +34,15 @@ app.get('/', function(req, res) {
 });
 
 app.post("/api/shorturl", function(req, res, next) {
-  console.log("THE URL :" + req.body.url);
   try {
-   req.fullURL = new URL(req.body.url);
-   req.urlDomain = req.fullURL.hostname;
+    req.fullURL = new URL(req.body.url);
+    req.urlDomain = req.fullURL.hostname;
+
+    if (fullURL.protocol.match(httpsRegex) == null) {
+      return res.json({
+        error: "Invalid URL"
+      });
+    }
   }
 
   catch(err) {
